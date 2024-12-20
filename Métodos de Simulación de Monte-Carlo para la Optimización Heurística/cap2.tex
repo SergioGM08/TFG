@@ -1,0 +1,164 @@
+\chapter{Optimización heurística} \label{Capitulo 2}
+
+En este capítulo nos centraremos en 
+
+\section{Conceptos generales}
+La optimización matemática es una técnica de investigación operativa utilizada en la toma de decisiones. El campo de la investigación operativa se sirve además de otras herramientas como la estadística, la teoría de la probabilidad, la simulación y el análisis de decisiones.
+
+En particular, la optimización matemática, en su búsqueda de la mejor solución posible a un problema, requiere de tres elementos:
+\begin{itemize}
+     \item Modelo de optimización, constituido de variables de decisión, restricciones y funciones objetivo.
+    \item Datos, para las demandas del modelo.
+    \item Algoritmo, para resolver la instancia del modelo.
+\end{itemize}
+Con esto, se buscan los valores de las variables de decisión que satisfagan todas las restricciones y optimicen las funciones objetivo.
+
+\section{Problemas de optimización}
+Para plantear un problema de optimización hay que definir los elementos anteriormente citados.
+
+Las variables de decisión en un modelo de optimización representan los parámetros variables del problema. Sus valores varían según marque el algoritmo con el fin de obtener aquellos que mejor se ajusten a las funciones objetivo.
+Los aspectos más relevantes de estas variables son el dominio al cual pertenecen, los límites entre los que se disponen y que son delimitados por la frontera del dominio y, finalmente, el tipo de variable, ya que puede ser real, entero, booleano, etc.
+Es importante hacer una elección coherente de estas características, pues ejerce un serio impacto en la redacción de las restricciones, la elección del algoritmo y, por tanto, en los resultados obtenidos.
+
+Las restricciones representan los límites del conjunto de soluciones que se está dispuesto a admitir. Se elaboran mediante relaciones entre las variables de decisión, así como entre sus valores.
+
+Las funciones objetivo en un modelo de optimización son representaciones matemáticas del ámbito que se desea optimizar. Estas funciones pueden ser maximizadas o minimizadas, y su tratamiento, ya sea individual o combinado en problemas con múltiples objetivos, determina el tipo de algoritmo de optimización.
+
+Una vez sentados estos elementos y finalizado el algoritmo, se llega a la solución del problema, la cual puede ser una combinación de factible (satisface las restricciones), óptima (factible que alcanza el mejor valor posible), no factible (fuera de la región factible, viola alguna restricción) y no acotada (tiende a más o a menos infinito en maximización y en minimización, respectivamente).
+
+Más formalmente, $\vFact$ es el vector de $N$ variables de decisión del sistema, $\Omega$ representa el espacio sobre el cual están definidas las soluciones factibles, \textit{$f_i$}(\vFact) cada una de las \textit{O} funciones objetivo del problema y optG($\cdot$) el método para conjuntar y optimizar los objetivos de manera sincrónica.
+A su vez, el espacio $\Omega$ queda definido por el tipo \textit{\textbf{T}} de cada variable, y las relaciones $g_j$(\vFact), $h_k$(\vFact) que definen las restricciones del problema.
+
+\begin{figure}[h]
+    \begin{minipage}[c]{0.45\linewidth}
+        \vspace{0.2em} % Ajusta este valor para que ambos bloques queden alineados
+        \begin{equation*}
+            \begin{aligned}
+                \text{optG}&\left(f_1(\vFact), f_2(\vFact), \dots, f_O(\vFact)\right) \\
+                &\vFact = [x_1, x_2, \dots, x_N] \\
+                &\vFact \in \Omega
+            \end{aligned}
+        \end{equation*}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[c]{0.45\linewidth}
+        \begin{equation*}
+            \vFact \in \Omega =
+            \begin{cases}
+                x_i \in T_i \\
+                g_j(\vFact) \leq 0, \, j=1:R \\
+                h_k(\vFact) = 0, \, k=1:P
+            \end{cases}
+        \end{equation*}
+    \end{minipage}
+\end{figure}
+
+Existen, entre los métodos de combinación y optimización simultánea, dos grandes familias a destacar:
+\begin{itemize}
+    \item Los métodos que convierten un problema con $\textit{O}>1$ objetivos en sólo un problema mediante una combinación (a menudo, lineal) de todos los objetivos y que optimizan el valor combinado, como por ejemplo $\displaystyle \min\limits_{\vFact} \sum_{i=1}^{O} w_i f_i(\vFact)$.
+    \item Los métodos que optimizan de forma simultánea todos los objetivos del problema utilizando una definición en la que se establece si una solución es mejor que otra comparando cada uno de los objetivos por separado. Por ejemplo, con la definición de Pareto optimalidad, una solución \textbf{A} es mejor que una solución \textbf{B} si para todo \textit{i}, $f_i\left(\textbf{A}\right)$ no es peor que $f_i\left(\textbf{B}\right)$ y existe un $j$ tal que $f_j\left(\textbf{A}\right)$ es mejor que $f_j\left(\textbf{B}\right)$. Este procedimiento se conoce como frentes Pareto de soluciones igualmente óptimas.
+\end{itemize}
+
+Hay que remarcar que los problemas con un solo objetivo son un caso particular de los problemas con objetivos múltiples, y no es estrictamente necesario el uso de una función G($\cdot$).
+
+Más definiciones formales de los problemas de optimización son:
+\begin{itemize}
+    \item Vector de decisión factible: vector $\vFact$ que cumple las restricciones, $\vFact \in \Omega$.
+    \item Óptimo local: un vector de decisión factible $\vFactOpt$ representa un óptimo local de la función G$\left(f_1(\vFact), f_2(\vFact), \dots, f_O(\vFact)\right)$ si existe $\varepsilon>0$ tal que G$\left(f_1(\vFactOpt), f_2(\vFactOpt), \dots, f_O(\vFactOpt)\right)$ no es peor que G$\left(f_1(\vFact), f_2(\vFact), \dots, f_O(\vFact)\right)$, $\forall \vFact$, en el entorno $\left\lVert \vFact-\vFactOpt \right\rVert<\varepsilon$.
+    \item Óptimo global: un vector de decisión factible $\vFactOpt$ representa un óptimo global de la función G$\left(f_1(\vFact), f_2(\vFact), \dots, f_O(\vFact)\right)$ si G$\left(f_1(\vFactOpt), f_2(\vFactOpt), \dots, f_O(\vFactOpt)\right)$ no es peor que G$\left(f_1(\vFact), f_2(\vFact), \dots, f_O(\vFact)\right)$, $\forall \vFact \in \Omega$.
+    \item Punto de silla: un vector de decisión factible $\vFactOpt = \left[\vFactOpt_A, \vFactOpt_B\right]$ representa un punto de silla de la función G$\left(f_1(\vFact), f_2(\vFact), \dots, f_O(\vFact)\right)$ si existe $\varepsilon>0$ tal que G$\left(f_1(\left[\vFact_A, \vFactOpt_B\right]), f_2(\left[\vFact_A, \vFactOpt_B\right]), \dots, f_O(\left[\vFact_A, \vFactOpt_B\right])\right)$ no es peor que G$\left(f_1\left(\left[\vFactOpt_A, \vFactOpt_B\right]\right), f_2\left(\left[\vFactOpt_A, \vFactOpt_B\right]\right), \dots, f_O\left(\left[\vFactOpt_A, \vFactOpt_B\right]\right)\right)$ y éste a su vez no es peor que G$\left(f_1\left(\left[\vFactOpt_A, \vFact_B\right]\right), f_2\left(\left[\vFactOpt_A, \vFact_B\right]\right), \dots, f_O\left(\left[\vFactOpt_A, \vFact_B\right]\right)\right)$, $\forall\vFact$ en $\left\lVert \left[\vFact_A, \vFact_B\right]-\left[\vFactOpt_A, \vFactOpt_B\right] \right\rVert<\varepsilon$.
+\end{itemize}
+
+En cuanto a los problemas, atendiendo a distintos criterios, se pueden clasificar según:
+\begin{enumerate}
+    \item Existencia de restricciones
+        \begin{enumerate}
+            \item Sin restricciones: en $\Omega$ sólo se define el tipo de variable.
+            \item Con reestricciones: en $\Omega$ se definen restricciones $g_j(\vFact)\leq 0$, o $h_k(\vFact)=0$.
+        \end{enumerate}
+    \item Naturaleza de las variables de decisión
+        \begin{enumerate}
+            \item Estáticos: la variable tiempo no es relevante.
+            \item Dinámicos: el tiempo es la variable de la que dependen el resto de variables.
+        \end{enumerate}
+    \item Número de objetivos
+        \begin{enumerate}
+            \item Mono-objetivo: se optimiza un sólo objetivo.
+            \item Multi-objetivo: se optimizan varios objetivos.
+        \end{enumerate}
+    \item Naturaleza de las funciones involucradas
+        \begin{enumerate}
+            \item Problemas lineales: todas las funciones objetivo de las restricciones son lineales.
+            \item Problemas no lineales: alguna de las funciones objetivo o restricciones no es lineal.
+            \item Problemas de programación geométrica: las funciones objetivo y las restricciones son expresables en forma de polinomios de las variables de decisión.
+            \item Problemas cuadráticos: caso especial de problema no lineal en el que las funciones objetivo son cuadráticas y las restricciones son lineales.
+        \end{enumerate}
+    \item Valores permisibles de las variables de decisión
+        \begin{enumerate}
+            \item Problemas de programación reales: las variables de decisión toman cualquier valor real.
+            \item Problemas de programación entera: las variables de decisión toman sólo valores enteros (o discretos). Como caso particular, se tienen las de variable booleana (0 ó 1).
+            \item Problemas de programación mixta: una mixtura de los anteriores.
+        \end{enumerate}
+    \item Naturaleza determinista de las variables de decisión
+        \begin{enumerate}
+            \item Problemas deterministas: todos los parámetros del problema se conocen con certeza y, por tanto, se pueden evaluar las funciones.
+            \item Problemas estocásticos: existe incertidumbre sobre alguno o todos los parámetros del problema, y se tienen que dar definiciones probabilísticas para algunas funciones.
+        \end{enumerate}
+    \item Separabilidad de las funciones:
+        \begin{enumerate}
+            \item Problemas separable: tanto las funciones objetivo como las restricciones pueden separarse en suma de funciones de diferentes variable de decisión. Si la suma se realiza de manera independiente sobre cada una de las variables de decisión, se dice que los problemas son totalmente separables.
+            \item Problemas no separables: caso contrario al anterior.
+        \end{enumerate}
+    \item Complejidad computacional
+        \begin{enumerate}
+            \item Problemas de clase P: se conocen algoritmos capaces de obtener la solución óptima del problema en un tiempo polinomial, según el tamaño del problema. Se suele expresar O(p(n)), con n el tamaño, p$(\cdot)$ polinomio, O$(\cdot)$ orden de cómputo.
+            \item Problemas de clase NP: un algoritmo no puede resolverlo en tiempo polinomial, o bien no se conoce. A su vez, pueden ser NP-hard o NP-completos. Existen dos vías para enfrentar estos problemas: o bien utilizar un algoritmo que asegure la optimalidad pero el tiempo de cómputo sea excesivo, o bien encontrar una solución no óptima pero aceptable, en un tiempo razonable.
+        \end{enumerate}
+\end{enumerate}
+En este último criterio, los algoritmos del primer grupo se conocen como exactos y los del segundo grupo, aproximados. Algunos de estos algoritmos aproximados se los denomina heurísticos.
+
+\section{Algoritmos Heurísticos}
+En inteligencia artificial, el término heurístico hace referencia, en especial, a un procedimiento que intenta aportar soluciones razonablemente buenas teniendo en cuenta la calidad de las soluciones y los recursos empleados. En investigación operativa es similar, pero no se asegura la optimalidad ni la factibilidad de las soluciones, tampoco lo cerca de ellas que se está. También se usa el término heurística cuando se realizan modificaciones en el procedimiento de la solución en pos de mejorar su rendimiento.
+
+En el contexto de las metaheurísticas, este término se utiliza para referirse a algoritmos heurísticos que integran un conjunto de mecanismos de control diseñados para optimizar el funcionamiento de la heurística y mejorar su rendimiento. Otra acepción sería un algoritmo basado en procedimientos
+heurísticos “inteligentes”.
+
+Las propiedades que se desea que posean estos algoritmos son sencillez, precisión (sin ambigüedades), eficiente (da soluciones, son de alta calidad y se aprovechan los recursos), general (aplicable a muchos problemas), robustez (su comportamiento apenas varía con modificaciones o cambio de contexto), multiplicidad de soluciones (para elección del usuario), flexibilidad en los parámetros y restricciones y, finalmente, modelable (para particularidades y generalidades de cada problema). 
+
+Atendiendo al modo en el que buscan y construyen sus soluciones, las cuatro grandes familias son:
+\begin{enumerate}
+    \item Metaheurísticas de relajación:  se resuelve versiones menos restrictivas y, por tanto, más fáciles de resolver que el problema original.
+    \item Metaheurísticas constructivas: se obtiene la solución del problema a partir del análisis y selección gradual de las componentes que la forman.
+    \item Metaheurísticas de búsqueda: se recorre el espacio de soluciones mediante transformaciones y movimientos que aprovechan la estructura del problema.
+    \item Metaheurísticas evolutivas: los valores de un conjunto de soluciones evolucionan de forma paralela, acercándose según aumenta el número de iteraciones, a la solución óptima.
+\end{enumerate}
+
+\subsection{Metaheurísticas de búsqueda}
+Las metaheurísticas de búsqueda establecen estrategias para recorrer el espacio de soluciones del problema transformando de forma iterativa y a través de reglas astutas una solución inicial en otra.
+
+A su vez, hay dos grandes familias: las técnicas de búsqueda local y las técnicas de búsqueda global.
+
+Por un lado, las técnicas de búsqueda local se basan en alguna regla inteligente que modifica una solución del problema. Ésta se aplica de forma iterativa hasta que no se pueda mejorar la solución previa.
+Las modificaciones sólo permiten trasladar una solución actual a una de su vecindad. Se dejarán de realizar estas modificaciones si no se encuentra ninguna solución mejor que la de partida. Si la hubiera, se utilizará la mejor solución hallada para la solución de partida de la siguiente iteración.
+Este tipo de técnicas están relacionadas con algoritmos de búsqueda monótona o con técnicas de escalado (\textit{hill-climbing}). Además, al elegir la mejor solución posible determinada por la regla elegida, convierte estas metaheurísticas en algoritmos voraces (\textit{greedy}).
+La desventaja primordial de las búsquedas locales es que pueden quedar fácilmente atrapadas en un óptimo local. Esto es, que no puede mejorarse una solución mediante las transformaciones de la heurística.
+
+Por otro lado, las metaheurísticas de búsqueda global pretenden eliminar la localidad extendiendo la búsqueda de los algoritmos a otras regiones del espacio. Esto se consigue mediante varias mecánicas, como son las búsquedas de arranque múltiple (\textit{Multi Start Search}), en la que se reinicia la búsqueda a partir de otra solución inicial distinta; las búsquedas por entorno variable (\textit{Variable Neighbourhood Search, VNS}), en las que se modifica el tipo de movimiento en el entorno definido por la regla para evitar quedar atrapada en una región rígida; búsquedas no monótonas, en las que se admite que el movimiento empeore durante la búsqueda ya sea bien utilizando memoria para que con la información adquirida no se caiga en una zona concreta del espacio, evitando momentáneamente soluciones muy parecidas entre sí, como en el la búsqueda tabú (\textit{Taboo Search, TS}, o bien se establecen normas para controlar la probabilidad de aceptar una solución igual o peor, como en el enfriamiento simulado (\textit{Simulated Annealing}), en el que la probabilidad de aceptación viene dada por una función exponencial del empeoramiento producido.
+
+\subsection{Metaheurísticas evolutivas}
+Las metaheurísticas evolutivas establecen estrategias para guiar la evolución de un conjunto de posibles soluciones, al que llamaremos población, hacia la solución óptima.
+
+La exploración del espacio de soluciones se hace en cada iteración con una población, modificando cada individuo teniendo en cuenta los valores del resto y las funciones de ajuste asociadas. Esto último no es estrictamente necesario, pues habrá regiones no explorables con la información exclusiva de la población, por lo que se pueden añadir mecanismos adicionales. En cada iteración, se sustituye la población con nuevas soluciones y, en ocasiones, parte de las ya existentes. En algunos algoritmos se guardarían los mejores individuos para tenerlos en cuenta posteriormente. La distinción entre metaheurísticas evolutivas se hace respecto a cómo combinan la información obtenida de la población.
+
+Entre otros, existen tres grandes grupos:
+
+Algoritmos genéticos (\textit{Genetic Algorithms, GA}), en los que en cada iteración (generación) mantiene una población de posibles soluciones que evolucionan hacia las soluciones óptimas del problema mediante una selección de individuos (selección natural) y operadores genéticos (cruce y mutación). Se inspira en la teoría de la evolución de Darwin.
+
+Nubes de partículas (\textit{Particle Swarm Optimization, PSO}), en las que se mantiene un conjunto de posibles soluciones (partículas) que son desplazadas por el espacio de búsqueda teniendo en cuenta el desplazamiento anterior, el mejor valor hallado por la partícula (líder u mejor local) y el mejor valor hallado por todas las partículas (líder o mejor global). Está inspirado en el comportamiento de bandadas de aves o bancos de peces.
+
+Evolución diferencial (\textit{Differential Evolution, DE}), en la que a lo largo de las iteraciones, el conjunto de posibles soluciones son desplazadas incrementalmente (diferencial) teniendo en cuenta las diferencias entre pares de soluciones del conjunto, adaptándose a la diversidad de soluciones existentes. Los métodos de escalada o gradiente son de este estilo.
+
+
+
+
+

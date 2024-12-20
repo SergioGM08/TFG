@@ -1,0 +1,218 @@
+\documentclass[openany,12pt,a4paper]{book}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{stackrel}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{appendix}
+\usepackage{fancyvrb}
+\usepackage{fancybox}
+\usepackage{tcolorbox}
+\usepackage{schemata}
+\usepackage{amsfonts}
+\usepackage{array}
+\usepackage{relsize}
+\usepackage{amssymb}
+\usepackage{multicol}
+\setlength{\columnseprule}{0.6pt}
+\usepackage{esvect}
+\usepackage{mathabx}
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[nottoc]{tocbibind}
+\usepackage{synttree} 
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{lipsum} 
+\usepackage{longtable}
+\usepackage{makecell} % Paquete para hacer saltos de línea en celdas
+\usepackage{array} % Paquete para ajustar el ancho de las columnas
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[
+backend=biber,
+style=numeric,
+sorting=none
+]{biblatex}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\usepackage{algorithm2e}
+
+
+
+% Ajusta el espaciado de las secciones
+\titlespacing*{\section}{0pt}{\baselineskip}{0.5\baselineskip}
+\titlespacing*{\subsection}{0pt}{0.75\baselineskip}{0.5\baselineskip}
+\titlespacing*{\subsubsection}{0pt}{0.5\baselineskip}{0.3\baselineskip}
+\definecolor{softbrown}{RGB}{250, 235, 204}
+\definecolor{commentgreen}{RGB}{2,112,10}
+\definecolor{weborange}{RGB}{255,100,0}
+\definecolor{mybackground}{RGB}{250, 235, 204}
+\addbibresource{biblio.bib}
+
+% Configuración global para el paquete listings
+\lstset{ 
+  language=Python, % Define el lenguaje
+  basicstyle=\ttfamily\small, % Define el estilo básico de texto
+  keywordstyle=\color{blue}, % Color para las palabras clave
+  commentstyle=\color{commentgreen}, % Color para los comentarios
+  stringstyle=\color{weborange}, % Color para las cadenas
+  showstringspaces=false, % No muestra espacios en cadenas
+  numberstyle=\tiny\color{gray}, % Estilo para números de línea
+  numbersep=5pt, % Separación entre números de línea y código
+  frame=none, % Marco alrededor del código
+  breaklines=true, % Permite el salto de línea
+  captionpos=b, % Pone la leyenda en la parte inferior del listado
+  backgroundcolor=\color{softbrown},
+  lineskip=0pt,
+}
+\pagestyle{headings}
+
+\graphicspath{ {images/} }
+\let\olditemize\itemize
+\def\itemize{\olditemize\itemsep=0pt }
+\setlength{\parindent}{0cm}
+\setlist[itemize]{topsep=0pt}
+\setlist[enumerate]{topsep=0pt}
+\newtheorem{teo}{Teorema}[subsection]
+\newtheorem{cor}[teo]{Corolario}
+\newtheorem{defi}[teo]{Definición}
+\newtheorem{prop}[teo]{Proposición}
+\newtheorem{lema}[teo]{Lema}
+\newtheorem{conj}[teo]{Conjetura}
+\newtheorem{obs}[teo]{Observación}
+\newtheorem{ejem}[teo]{Ejemplo}
+\newtheorem{axioma}[teo]{Axioma}
+\newenvironment{boxedverbatim}
+{\VerbatimEnvironment
+    \begin{tcolorbox}[colback=white,boxrule=0.4pt]
+        \begin{Verbatim}}
+    {\end{Verbatim}
+    \end{tcolorbox}}
+\usepackage[left=2.5cm,right=2.5cm,top=2cm,bottom=2.8cm]{geometry}
+\newcommand\Item[1][]{%
+  \ifx\mathbb{R}lax#1\mathbb{R}lax  \item \else \item[#1] \fi
+  \abovedisplayskip=-4pt\abovedisplayshortskip=0pt~\vspace*{-\baselineskip}}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\setlength{\parskip}{4mm}
+\newcommand{\mbb}{\mathbb}
+\newcommand{\lp}{\ensuremath{\left(}}
+\newcommand{\rp}{\ensuremath{\right)}}
+
+
+\makeatletter
+\newcommand{\dotminus}{\mathbin{\text{\@dotminus}}}
+
+\newcommand{\cjtoVarAl}{\textbf{\textit{U}}}
+\newcommand{\unCjtoVarAl}{\textbf{\textit{u}}}
+\newcommand{\unCjtoVarAlA}{\unCjtoVarAl_{A}^{(i)}}
+\newcommand{\unCjtoVarAlB}{\unCjtoVarAl_{B}^{(j)}}
+\newcommand{\unCjtoVarAli}{\unCjtoVarAl^{(i)}}
+\newcommand{\unCjtoVarAlj}{\unCjtoVarAl^{(j)}}
+\newcommand{\unCjtoVarAliMenos}{\unCjtoVarAl^{(i-1)}}
+\newcommand{\unCjtoVarAljMenos}{\unCjtoVarAl^{(j-1)}}
+\newcommand{\todasVar}{\textbf{\textit{V}}}
+\newcommand{\varOculBfMay}{\textbf{\textit{X}}}
+\newcommand{\varOculBfMin}{\textbf{\textit{x}}}
+\newcommand{\varObsBfMay}{\textbf{\textit{Y}}}
+\newcommand{\varObsBfMin}{\textbf{\textit{y}}}
+\newcommand{\unPeso}{\textit{w}\left(\unCjtoVarAl^{(i)}\right)}
+\newcommand{\unPesoA}{\textit{w}\left(\unCjtoVarAl_{A}^{(i)}\right)}
+\newcommand{\unPesoB}{\textit{w}\left(\unCjtoVarAl_{B}^{(j)}\right)}
+\newcommand{\cadenaGibbs}{\cjtoVarAl_{g}|\unCjtoVarAli_{1:g-1}, \unCjtoVarAliMenos_{g+1:G}}
+
+\newcommand{\vFact}{\textbf{x}}
+\newcommand{\vFactOpt}{\vFact^*}
+
+
+
+
+
+\renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistlistingname}{Índice de Códigos}
+
+\newcommand{\@dotminus}{%
+  \ooalign{\hidewidth\raise1ex\hbox{.}\hidewidth\cr$\m@th-$\cr}%
+}
+% Configuración de la profundidad de numeración y del índice de contenidos
+\setcounter{secnumdepth}{3} % Numerar hasta subsubsubsection
+\setcounter{tocdepth}{3} % Incluir hasta subsubsubsection en el índice
+\makeatother
+
+
+\author{Sergio González Montero}
+\title{TFG}
+\date{Febrero 2025}
+ 
+\bibliography{biblio}
+
+\begin{document}
+
+\begin{titlepage}
+		\centering
+		
+		{ \Large UNIVERSIDAD COMPLUTENSE DE MADRID}
+		
+		{ \Large \textbf{FACULTAD DE CIENCIAS MATEMÁTICAS}}
+		\vspace{0.8cm}
+		
+		{ \large DEPARTAMENTO DE SISTEMAS INFORMÁTICOS Y  COMPUTACIÓN}
+		\vspace{1cm}
+		
+		\vspace{0.6cm}
+		
+
+		%%%%Logo Complutense%%%%%
+		\includegraphics[width=0.35\textwidth]{Imagenes/ucm.png} 
+		\vspace{0.4cm}
+		
+        {\Large \textbf{TRABAJO DE FIN DE GRADO}}
+		
+		\vspace{8mm}
+        {\huge \bfseries Métodos de Simulación de Monte-Carlo para la Optimización Heurística\par}
+		\vspace{1cm}
+
+		{\large Presentado por: Sergio González Montero}
+		
+		{\large Dirigido por: Rafael del Vado Vírseda}
+		
+		\vspace{1.5cm}
+		{\large Grado en Matemáticas}
+		
+		{\large Curso académico 2024-25}
+\end{titlepage}
+
+\input{Resumen}
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+%\lstlistoflistings
+\thispagestyle{empty}
+\input{cap1}
+\input{cap2}
+\input{cap3}
+\input{cap4}
+\input{cap5}
+%input{Bibliografia}
+
+\medskip
+
+\printbibliography
+\chapter*{Anexos}
+\appendix
+\input{AnexoI}
+\newpage
+\input{AnexoII}
+\newpage
+\input{AnexoIII.tex}
+\end{document}
