@@ -1,11 +1,149 @@
 \chapter{Técnicas de simulación estocástica en algoritmos de optimización heurística} \label{Capitulo 4}
-Este capítulo se enfoca en 
+Este capítulo se centra en la utilización de los métodos de Monte Carlo para abordar problemas de optimización desde una perspectiva heurística. Un ejemplo representativo es el célebre problema del vendedor ambulante o del viajero (\textit{Traveling Salesman Problem, TSP}), donde la explosión combinatoria desempeña un papel crucial. Los algoritmos deterministas disponibles hasta el momento se caracterizan por su gran complejidad y falta de generalidad. Además, existen otros tipos de problemas que presentan dificultades inherentes debido a la presencia de numerosos mínimos (máximos) locales, los cuales requieren un examen exhaustivo. Aunque es posible explorarlos de manera eficiente, persiste la incertidumbre en cuanto a la adecuada transferencia de estos hallazgos para identificar el óptimo global.
+
+Así, es necesario apoyarse en los métodos de Monte-Carlo, los cuales son sencillos de programar y ofrecen un muy buen rendimiento computacional. Caben destacar los algoritmos genéticos (\textitGenetic Algorithms, GA{), GA}) y el temple simulado (\textit{Simulated Annealing}), los cuales se estudiarán más en profundidad en la sección \ref{sec:opt MC}
 
 El código completo está disponible en el repositorio de Github: \url{https://github.com/mavice07/TFG-Mates.git}.
 
-\section{Métodos de optimización de Monte-Carlo}
-\section{Problema de aprendizaje de la distribución de probabilidades}
-\section{Aplicaciones prácticas}
+\section{Métodos de optimización de Monte-Carlo}\label{sec:opt MC}
+El método de temple simulado se basa en la experiencia previa de la mecánica estadística, a veces referida como termodinámica estadística, en la que se estudian las propiedades macroscópicas de sistemas que tienen un enorme número de estados. Este campo enlaza las propiedades macroscópicas de los materiales en equilibrio termodinámico y los comportamientos y movimientos microscópicos que ocurren dentro del material.
+
+Las moléculas de un material pueden tener distintos niveles de energía, siendo el menor de ellos el estado fundamental. A mayor temperatura, mayor es la probabilidad de encontrar moléculas a un nivel más alto de energía, configurándose en distintos microestados. El conjunto de todos los posibles microestados se representará como $\varOmega$, y $n_i$ hará referencia al número de partículas en el estado $i$.
+
+Disminuir la temperatura de una sustancia hasta el cero absoluto no garantiza que ésta logre su estado de energía más bajo. Por tanto, se usa la técnica de templado, que consiste en elevar la temperatura del ambiente, al menos hasta conseguir que el sólido se funda, para después bajar la temperatura de manera gradual hasta que las partículas se estabilicen, volviendo al estado sólido (\textsl{congelación}). El proceso contrario del templado se conoce como oscurecimiento (\textsl{quenching}) en el que se hace descender la temperatura del ambiente instantáneamente. Si no se aplica un enfriamiento suave, el material
+alcanza una estructura meta-estable con mayor valor energético.
+
+La técnica del templado es el mejor procedimiento para evitar estancarse en un mínimo local de energía y alcanzar uno global, ya que, conforme la temperatura disminuye, también lo hace la probabilidad de aceptación de una solución peor que la actual.
+
+El equilibrio térmico está caracterizado por la \textsl{ecuación de Boltzmann}. Esto es, la probabilidad de que un material alcance un estado $i \in \varOmega$ con energía $E_i$ a la temperatura $T$.
+\begin{equation}
+    P_T(X = i) = \frac{1}{Z(T)} e^{\dfrac{-E_i}{k_B T}} \quad \text{con} \quad Z(T) = \sum_{j \in \Omega} e^{\dfrac{-E_j}{k_B T}}
+    \label{ec:4.1}
+\end{equation}
+$X$ representa la variable aleatoria que indica el estado del sólido, $T$ es la temperatura de ambiente, $k_B$ es la constante de Boltzmann y $Z(T)$ es la función de partición. Hay que observar que su suma se aplica a todos los estados de $\varOmega$. 
+
+La simulación de este fenómeno físico viene dado a través del algoritmo de Metrópolis, entre otros, generando los estados de la manera siguiente:
+\begin{itemize}
+    \item Se tiene un estado del material $i$, con energía $E_i$.
+    \item Tras alterar el estado actual, se genera al estado $j$ con energía $E_j$.
+    \item Se transiciona del primero al segundo si $E_i - E_j \geq 0$.
+    \item Se transiciona del primero al segundo con una probabilidad $P = e^{\frac{E_i - E_j}{k_BT}}$, si se da que $E_i - E_j \leq 0$.
+\end{itemize}
+Este criterio de aceptación se conoce como \textsl{criterio de Metrópolis}.
+Más tarde se estableció un paralelismo entre el fenómeno físico y la optimización:
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Simulación termodinámica} & \textbf{Optimización} \\
+        \hline
+        Estados del material & Soluciones del problema \\
+        \hline
+        Energía & Función objetivo \\
+        \hline
+        Cambios de estado & Soluciones vecinas \\
+        \hline
+        Estados metaestables & Mínimo local \\
+        \hline
+        Estado de congelación & Solución heurística \\
+        \hline
+    \end{tabular}
+    \caption{Paralelismo entre simulación termodinámica y optimización.}
+    \label{tab:4.1}
+\end{table}
+
+Se define también el criterio de aceptación para un problema mono-objetivo de minimización, que jugará el papel del de Metrópolis, que da la probabilidad de aceptar una solución $x$ generada a partir de las vecindades de una solución $x^*$. Si definimos $\Delta f(x, x^*) = f(x) - f(x^*)$:
+
+\begin{equation}
+    P(\text{aceptar } x \text{ a partir de } x^*) = 
+    \begin{cases} 
+        1 & \text{si } f(x) \leq f(x^*) \\ 
+        e^{\dfrac{-\Delta f(x, x^*)}{c}} & \text{si } f(x) > f(x^*) 
+    \end{cases}
+    \label{ec:4.2}
+\end{equation}
+
+El parámetro $c \in \mathbb{R^{+}}$, análogo a la temperatura, debe reducirse lentamente para que se dé el efecto deseado. Dichas estrategias se denominan \textsl{planes de templado}.
+Esto se puede traducir en una matriz $g$ de dimensión $|\varOmega|\times|\varOmega|$, con las propiedades de irreductibilidad ($x_0 = x^*, x_1, x_2, \dots, x_n = x, \quad n \quad \text{finito, si} \quad g_{x_{i-1},x_i} \geq 0$) y simetría ($g_{x_i x_j} = g_{x_j x_i})$.
+Dado que $c$ varía en cada iteración, la ecuación \ref{ec:4.2} hará que las probabilidades de transición de la cadena de Markov varíen con el tiempo, generando así una de tipo no homogéneo.
+
+Por tanto, un algoritmo de búsqueda local (\ref{subsec:2.3.1}) puede transformarse en uno de templado al seleccionar aleatoriamente una solución de las vecindades en cada iteración $k$, y utilizar el criterio de aceptación para determinar si se reemplaza la solución actual por la del entorno seleccionada, considerando el valor del parámetro de control, $c$, en esa iteración. Esto se repetirá en cada iteración un número suficiente de veces (ciclo de procesamiento, $L$) como para alcanzar el equilibrio térmico para cada una de las temperaturas $c$.
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}[t]{0.44\textwidth}
+        \centering
+        \begin{tcolorbox}[colframe=black, colback=white, boxrule=0.5pt, width=\textwidth, sharp corners]
+            \parbox[t]{\linewidth}{x$^*$=SA(Cm,Nm)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{1.} \parbox[t]{\linewidth}{x=Construct(Cm)}\\[0.5em]
+            \parbox[t]{0.1\linewidth}{2.} \parbox[t]{\linewidth}{c=Init(x)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{3.} \parbox[t]{\linewidth}{L=Length(c)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{4.} \parbox[t]{\linewidth}{x$^*$=x} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{5.} \parbox[t]{\linewidth}{do:} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{6.} \parbox[t]{\linewidth}{\hspace{1em} x=Cicle(Nm,c,L,x)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{7.} \parbox[t]{\linewidth}{\hspace{1em} if $x \ll x^*$: $x^* = x$} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{8.} \parbox[t]{\linewidth}{\hspace{1em} c=Cooling(c)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{9.} \parbox[t]{\linewidth}{\hspace{1em} L=Length(c)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{10.} \parbox[t]{\linewidth}{while (stop criteria == False)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{11.} \parbox[t]{\linewidth}{return x$^*$}
+        \end{tcolorbox}
+        \caption{Temple simulado.}
+        \label{fig:4.1}
+    \end{minipage}
+    \hfill % Espacio entre las figuras
+    \begin{minipage}[t]{0.55\textwidth}
+        \centering
+        \begin{tcolorbox}[colframe=black, colback=white, boxrule=0.5pt, width=\textwidth, sharp corners]
+            \parbox[t]{\linewidth}{x=Cicle(Nm,c,L,x)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{1.} \parbox[t]{\linewidth}{\hspace{1em} for l=1 to L:}\\[0.5em]
+            \parbox[t]{0.1\linewidth}{2.} \parbox[t]{\linewidth}{\hspace{1em} N=Neighborhood(Nm,x)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{3.} \parbox[t]{\linewidth}{\hspace{1em} x$^\prime$=RandomSel(N)} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{4.} \parbox[t]{\linewidth}{\hspace{1em} if(accep criteria(x,x$^\prime$) == True): x=x$^\prime$} \\[0.5em]
+            \parbox[t]{0.1\linewidth}{5.} \parbox[t]{\linewidth}{return x}
+        \end{tcolorbox}
+        \caption{Ciclo de procesamiento.}
+        \label{fig:4.2}
+    \end{minipage}
+\end{figure}
+
+El permitir aceptar soluciones peores a la actual (línea 4. Figura \ref{fig:4.2}) es la clave para que, a diferencia de los de búsqueda local, el SA no quede atrapado en óptimos locales. Según disminuya $c$, menor será la probabilidad de aceptar dicha solución. De hecho, cuando $c = 0$, se ve claramente que SA es una generalización de la búsqueda monótona.
+
+El algoritmo SA converge con una rapidez sujeta tanto al número de transformaciones (generación de una solución vecina y la aplicación del criterio de aceptación) para cada temperatura $c$, como por la forma en la que aminora (enfría) este parámetro.
+Teóricamente, esta convergencia al óptimo sucede de manera asintótica. Sin embargo, en la práctica es inviable ejecutar tal número de iteraciones, de modo que se rebajan sustancialmente.
+
+Para ello, se sigue un plan de templado determinando un valor inicial para el parámetro de control $c$, una función de enfriamiento, un valor $L$ de transiciones en cada valor de $c$, y un valor final de $c$ como criterio de parada.
+
+Valor inicial del parámetro $c$: siguiendo la analogía termodinámica, se requiere un valor alto para permitir aceptar cambios sustanciales. Una propuesta para $c_0$, valor inicial de $c$, en la línea 2 del algoritmo \ref{fig:4.1}, es igualarlo a la diferencia del mayor y menor valor de la función de coste en las vecindades de la solución inicial, es decir, $c_0 = f_{max} - f_{min}$.
+Otra propuesta es comenzar con un $c_0$ pequeño y calcular a través de iteraciones el llamado radio de aceptación $\chi$ para luego multiplicar $c_0$ por una constante mayor que 1 y volver a calcular $\chi$. Esto se repite hasta que el radio es próximo a 1.
+Otra posibilidad más es el esquema de enfriamiento en tiempo polinomial. Si $m_1$ representan las iteraciones aceptadas, $m_2$ las iteraciones rechazadas y $\Delta f^{+}$ la media de diferencias de energía de $m_2$, el valor inicial de $c = c_0$ se calcula ahora como
+
+\begin{displaymath}
+    \chi = \dfrac{m_1 + m_2 \cdot e^{-\frac{\Delta f^{+}}{c}}}{m_1 + m_2} \quad \Longrightarrow \quad c = \dfrac{\Delta f^+}{\ln \left( \frac{m_2}{m_2 \cdot \chi - m_1 \cdot (1-\chi)} \right)}
+\end{displaymath}
+
+estableciendo el valor de $\chi$ cercano a 1, habiendo medido el resto de parámetros.
+
+Función de enfriamiento: relativo a la línea 8 del algoritmo \ref{fig:4.1}, el método para conseguir la suavidad del descenso de temperatura se obtiene principalmente multiplicando $c$ por una constante $\alpha \in [0.80, 0.99]$, la velocidad de enfriamiento, de modo que $c_{k+1} = \alpha \cdot c_k$.
+Menos extendidas pero también válidas son la opción $c_{k+1} =\frac{c_k}{1+\beta}, \quad \text{con} \quad \beta \in [0.1, 0.3]$, la variante adaptativa $c_{k+1} =\frac{c_k}{1+\beta}$ si el movimiento ha sido aceptado mientras que si no lo fue, se realiza $c_{k+1} =\frac{c_k}{1+\gamma}, \quad \text{con} \quad \beta = \gamma\cdot r$; o la estrategia de enfriamiento en tiempo polinomial, $c_{k+1} = \dfrac{c_k}{1 + \frac{c_k \cdot \ln(1 + \delta)}{3\sigma_c}}$, donde $\delta$ denota la distancia y hace decrecer el parámetro $c$, y donde $\sigma_c$ denota la desviación estándar de la función objetivo al parámetro $c$.
+
+Longitud del ciclo de procesamiento: haciendo referencia a las líneas 3 y 9 de \ref{fig:4.1}, se trata del número $L$ de iteraciones en cada ciclo y se ve influida  de forma proporcional por la función de enfriamiento, es decir, un descenso más pronunciado de la temperatura permite ciclos más largos. Aún así, la longitud crece según decrece $c$, pues se requieren más intentos por escapar de mínimos locales. Para cada temperatura, la estrategia puede ser bien fijar un valor manualmente y estudiar su convergencia para decidir si mantenerlo o cambiarlo, bien establecer una relación explícita con la función de enfriamiento o bien no estipular un valor base, sino realizar las iteraciones necesarias para que se acepten un número concreto de cambios.
+Con esta estrategia, al aceptarse más cambios cuando $c$ se acerca a cero, $L$ tenderá a infinito, luego es necesario establecer una cota superior.
+
+Criterio de parada: referenciando a la línea 10 del algoritmo \ref{fig:4.1}
+, a diferencia del proceso termodinámico, no es necesario llegar al estado sólido, sino que el algoritmo puede parar antes debido al uso de probabilidades, ya muy cercanas a cero antes de que se dé la analogía con la congelación. Los distintos criterios de parada posibles pueden atender a la baja probabilidad de aceptación supeditada al valor de $c$, o a razón del número de iteraciones sin producirse un cambio. En ocasiones, este número se toma como ciclo de procesamiento.
+No obstante, es posible que estos dos criterios puedan tomar demasiadas iteraciones e incluso ciclos enteros en un entorno de un mínimo local, evitando así la congelación pero sin salir de dicho entorno.
+Por tanto, se proponen otros dos criterios que consisten en finalizar el algoritmo cuando los desplazamientos aceptados descienden de una determinada proporción o en recalentar una vez alcanzada la congelación y detenerlo tras unas ciertas iteraciones sin que se hayan producido cambios.
+
+
+\section{Algoritmos genéticos}
+
+El concepto de algoritmo genético (\textsl{Genetic Algorithm, GA}), también conocido como evolutivo, enmarca un conjunto de técnicas bioinspiradas, estableciendo clásicamente un paralelismo con la teoría darwiniana. Se establece una analogía entre iteraciones y generaciones, población (conjunto de soluciones) e individuos de una especie, mejorando estos hacia la mejor solución a través de selección (selección natural) junto a operadores genéticos (crce y mutación).
+
+\subsubsection{Tipos de aprendizaje}
+Se distinguen tres tipos de inteligencia en los seres vivos, en los cuales se inspiran estos algoritmos:
+
+Filogenética: 
+\section{Caso práctico: problema de rutas de vehículos}
 
 
 

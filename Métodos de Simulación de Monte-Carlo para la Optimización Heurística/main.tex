@@ -6,6 +6,7 @@
 \usepackage{stackrel}
 \usepackage{hyperref}
 \usepackage{mathtools}
+\usepackage{mathrsfs}
 \usepackage{appendix}
 \usepackage{fancyvrb}
 \usepackage{fancybox}
@@ -47,7 +48,11 @@ sorting=none
 \usetikzlibrary{automata, positioning, arrows}
 \usepackage{algorithm2e}
 
+% \usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{algpseudocode}
 
+\spanishdecimal{.}
 
 % Ajusta el espaciado de las secciones
 \titlespacing*{\section}{0pt}{\baselineskip}{0.5\baselineskip}
@@ -67,12 +72,13 @@ sorting=none
   commentstyle=\color{commentgreen}, % Color para los comentarios
   stringstyle=\color{weborange}, % Color para las cadenas
   showstringspaces=false, % No muestra espacios en cadenas
+  numbers=left,
   numberstyle=\tiny\color{gray}, % Estilo para números de línea
   numbersep=5pt, % Separación entre números de línea y código
   frame=none, % Marco alrededor del código
   breaklines=true, % Permite el salto de línea
   captionpos=b, % Pone la leyenda en la parte inferior del listado
-  backgroundcolor=\color{softbrown},
+  backgroundcolor=\color{white},
   lineskip=0pt,
 }
 \pagestyle{headings}
