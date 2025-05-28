@@ -1,29 +1,21 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+"""
 
-'''
-
-Ejemplo más avanzado y de uso real de optimización basada en métodos de Monte C
-arlo, aplicado a la logística y distribución.
-
-Problema: Optimización de rutas de entrega
+OPTIMIZACIÓN DE RUTAS DE ENTREGA
 
 Una empresa de logística tiene un conjunto de clientes dispersos en una ciudad 
 y un almacén central. La empresa quiere minimizar la distancia total recorrida 
 por sus repartidores al visitar a todos los clientes una sola vez y regresar 
 al almacén.
 
-Este problema es una variante del Traveling Salesman Problem (TSP).
+Este problema es del tipo de Traveling Salesman Problem (TSP).
 
-Solución con Monte Carlo
+Solución con Monte Carlo:
 
-Generamos muchas rutas aleatorias entre los clientes.
+    1) Generamos muchas rutas aleatorias entre los clientes.
+    2) Calculamos la distancia total recorrida para cada ruta.
+    3) Seleccionamos la ruta con la menor distancia como la mejor solución encontrada.
 
-Calculamos la distancia total recorrida para cada ruta.
-
-Seleccionamos la ruta con la menor distancia como la mejor solución encontrada.
-
-'''
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,7 +23,7 @@ from scipy.spatial.distance import cdist
 
 # Configuración del problema
 num_clients = 10  # Número de clientes
-np.random.seed(42)  # Fijamos la semilla para reproducibilidad
+np.random.seed(57)  # Fijamos la semilla para reproducibilidad
 
 # Generamos coordenadas aleatorias para los clientes en un mapa 100x100
 clients = np.random.rand(num_clients, 2) * 100
@@ -42,7 +34,7 @@ locations = np.vstack([depot, clients])  # Todas las ubicaciones
 distance_matrix = cdist(locations, locations, metric='euclidean')
 
 # Monte Carlo Simulation: Generamos rutas aleatorias
-num_simulations = 10000
+num_simulations = 10000 # Exhaustivamente, serían 10! rutas a explorar, math.factorial(10) = 3628800
 best_distance = float('inf')
 best_route = None
 
@@ -59,7 +51,7 @@ for _ in range(num_simulations):
         best_route = full_route
 
 # Visualización de la mejor ruta
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(8,6))
 plt.scatter(clients[:, 0], clients[:, 1], color='blue', label="Clientes", s=100)
 plt.scatter(depot[:, 0], depot[:, 1], color='red', marker="s", s=200, label="Almacén")
 
@@ -68,13 +60,13 @@ for i in range(len(best_route) - 1):
     start, end = best_route[i], best_route[i + 1]
     plt.plot([locations[start, 0], locations[end, 0]], [locations[start, 1], locations[end, 1]], 'k-')
 
-plt.xlabel("Coordenada X")
-plt.ylabel("Coordenada Y")
-plt.title(f"Optimización de Rutas con Monte Carlo (Distancia: {best_distance:.2f})")
+plt.title(f"TSP mediante Monte Carlo para {num_clients} nodos \n(Distancia: {best_distance:.2f})")
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 plt.legend()
-plt.grid()
+plt.tight_layout()
 plt.show()
 
 # Imprimir la mejor ruta
+print(f"Número de simulaciones: {num_simulations}")
 print(f"\nMejor ruta encontrada: {best_route}")
 print(f"Distancia total mínima encontrada: {best_distance:.2f}")
