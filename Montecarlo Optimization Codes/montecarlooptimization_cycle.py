@@ -12,7 +12,7 @@ def funcion_objetivo(x):
     # Función con múltiples máximos locales
     return np.sin(3*x) + 0.5*np.cos(5*x) - 0.1*x**2
 
-def recocido_simulado(f_obj, x_inicio=0.0, temp_inicio=10.0, temp_final=0.01,
+def temple_simulado(f_obj, x_inicio=0.0, temp_inicio=10.0, temp_final=0.01,
                       tasa_enfriamiento=0.98, max_iter=500,
                       long_ciclo=20):
     # Valores iniciales
@@ -49,7 +49,7 @@ def recocido_simulado(f_obj, x_inicio=0.0, temp_inicio=10.0, temp_final=0.01,
                     mejor_x, mejor_f = x_actual, f_act
                 else:
                     print(f'¡{f_act} < {mejor_f}! No he mejorado mi mejor f')
-            time.sleep(1)
+            #time.sleep(1)
             historial.append((x_actual, f_act))
             if iter_total >= max_iter:
                 break
@@ -60,7 +60,7 @@ def recocido_simulado(f_obj, x_inicio=0.0, temp_inicio=10.0, temp_final=0.01,
     return mejor_x, mejor_f, historial
 
 # Ejecutar la optimización
-x_opt, f_opt, historial = recocido_simulado(f_obj=funcion_objetivo)
+x_opt, f_opt, historial = temple_simulado(f_obj=funcion_objetivo)
 
 # Visualización de la trayectoria
 x_vals = np.linspace(-5, 5, 1000)
@@ -75,7 +75,7 @@ plt.colorbar(sc, label='Iteración')
 plt.scatter([x_opt], [f_opt], color='red', s=200, marker='*', label='Solución óptima')
 plt.xlabel('x')
 plt.ylabel('f(x)')
-plt.title(f'Optimización por Recocido Simulado\nMejor punto: ({x_opt:.4f}, {f_opt:.4f})')
+plt.title(f'Optimización por Temple Simulado\nMejor punto: ({x_opt:.4f}, {f_opt:.4f})')
 plt.legend()
 plt.tight_layout()
 plt.show()
