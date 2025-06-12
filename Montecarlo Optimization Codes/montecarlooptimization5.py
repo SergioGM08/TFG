@@ -1,72 +1,57 @@
-"""
-
-OPTIMIZACIÓN DE RUTAS DE ENTREGA
-
-Una empresa de logística tiene un conjunto de clientes dispersos en una ciudad 
-y un almacén central. La empresa quiere minimizar la distancia total recorrida 
-por sus repartidores al visitar a todos los clientes una sola vez y regresar 
-al almacén.
-
-Este problema es del tipo de Traveling Salesman Problem (TSP).
-
-Solución con Monte Carlo:
-
-    1) Generamos muchas rutas aleatorias entre los clientes.
-    2) Calculamos la distancia total recorrida para cada ruta.
-    3) Seleccionamos la ruta con la menor distancia como la mejor solución encontrada.
-
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 
-# Configuración del problema
-num_clients = 10  # Número de clientes
-np.random.seed(57)  # Fijamos la semilla para reproducibilidad
+np.random.seed(57)         # Semilla para reproducibilidad
+# Numero de clientes, posiciones
+num_clientes = 10
+clientes  = np.random.rand(num_clientes, 2) * 100
+deposito  = np.array([[50, 50]])
+ubicaciones = np.vstack([deposito, clientes])
 
-# Generamos coordenadas aleatorias para los clientes en un mapa 100x100
-clients = np.random.rand(num_clients, 2) * 100
-depot = np.array([[50, 50]])  # Almacén central en el centro del mapa
-locations = np.vstack([depot, clients])  # Todas las ubicaciones
+# Matriz con distancias euclidea entre todos los nodos
+matriz_dist = cdist(ubicaciones, ubicaciones, metric='euclidean')
 
-# Calculamos la matriz de distancias entre todos los puntos
-distance_matrix = cdist(locations, locations, metric='euclidean')
+# Generacion aleatoria de posibles rutas
+num_simulaciones = 10000
+mejor_distancia  = np.inf
+mejor_ruta       = None
 
-# Monte Carlo Simulation: Generamos rutas aleatorias
-num_simulations = 10000 # Exhaustivamente, serían 10! rutas a explorar, math.factorial(10) = 3628800
-best_distance = float('inf')
-best_route = None
+for _ in range(num_simulaciones):
+    ruta          = np.random.permutation(range(1, num_clientes + 1))   # Permuta aleatoria
+    ruta_completa = np.concatenate(([0], ruta, [0]))
 
-for _ in range(num_simulations):
-    route = np.random.permutation(range(1, num_clients + 1))  # Generamos una ruta aleatoria (excluyendo el almacén)
-    full_route = np.concatenate(([0], route, [0]))  # Añadimos el almacén al inicio y al final
-    
-    # Calculamos la distancia total de la ruta
-    total_distance = sum(distance_matrix[full_route[i], full_route[i + 1]] for i in range(len(full_route) - 1))
-    
-    # Guardamos la mejor ruta encontrada
-    if total_distance < best_distance:
-        best_distance = total_distance
-        best_route = full_route
+    # Distancia de la ruta
+    dist = sum(matriz_dist[ruta_completa[i], ruta_completa[i + 1]]
+               for i in range(len(ruta_completa) - 1))
 
-# Visualización de la mejor ruta
-plt.figure(figsize=(8,6))
-plt.scatter(clients[:, 0], clients[:, 1], color='blue', label="Clientes", s=100)
-plt.scatter(depot[:, 0], depot[:, 1], color='red', marker="s", s=200, label="Almacén")
+    # Mejor ruta hasta el momento
+    if dist < mejor_distancia:
+        mejor_distancia = dist
+        mejor_ruta      = ruta_completa
 
-# Dibujamos la mejor ruta encontrada
-for i in range(len(best_route) - 1):
-    start, end = best_route[i], best_route[i + 1]
-    plt.plot([locations[start, 0], locations[end, 0]], [locations[start, 1], locations[end, 1]], 'k-')
+# Visualizacion
+plt.figure(figsize=(8, 6))
 
-plt.title(f"TSP mediante Monte Carlo para {num_clients} nodos \n(Distancia: {best_distance:.2f})")
-plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-plt.legend()
+plt.scatter(clientes[:, 0], clientes[:, 1], c='blue', s=100, label='Clientes')
+plt.scatter(deposito[0, 0], deposito[0, 1], c='red', s=200, marker='s', label='Depósito')
+
+for i, (x, y) in enumerate(clientes, start=1):
+    plt.text(x + 1, y + 1, str(i), color='blue')
+
+plt.text(deposito[0, 0] + 1, deposito[0, 1] + 2, '0', color='red', fontweight='bold')
+
+# Mejor ruta
+for i in range(len(mejor_ruta) - 1):
+    a, b = mejor_ruta[i], mejor_ruta[i + 1]
+    plt.plot([ubicaciones[a, 0], ubicaciones[b, 0]],
+             [ubicaciones[a, 1], ubicaciones[b, 1]], 'k-')
+
+plt.title(f"TSP mediante Monte Carlo para {num_clientes} nodos\n"
+          f"Simulaciones: {num_simulaciones}; Distancia mínima: {mejor_distancia:.2f};\n"
+          f"Ruta óptima: {mejor_ruta}")
+
+plt.grid(True, linestyle='--', linewidth=0.5)
+plt.legend(loc='lower left')
 plt.tight_layout()
 plt.show()
-
-# Imprimir la mejor ruta
-print(f"Número de simulaciones: {num_simulations}")
-print(f"\nMejor ruta encontrada: {best_route}")
-print(f"Distancia total mínima encontrada: {best_distance:.2f}")
