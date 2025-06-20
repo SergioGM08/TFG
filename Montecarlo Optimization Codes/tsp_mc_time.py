@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 
+import time
+
 np.random.seed(57)         # Semilla para reproducibilidad
 # Numero de clientes, posiciones
 num_clientes = 10
@@ -17,6 +19,9 @@ num_simulaciones = 10000
 mejor_distancia  = np.inf
 mejor_ruta       = None
 
+# Comenzar medición de tiempo
+tiempo_inicio = time.perf_counter()
+
 for _ in range(num_simulaciones):
     ruta          = np.random.permutation(range(1, num_clientes + 1))   # Permuta aleatoria
     ruta_completa = np.concatenate(([0], ruta, [0]))
@@ -29,6 +34,10 @@ for _ in range(num_simulaciones):
     if dist < mejor_distancia:
         mejor_distancia = dist
         mejor_ruta      = ruta_completa
+
+# Fin de medición de tiempo
+tiempo_fin = time.perf_counter()
+print(f"Tiempo de generación y evaluación de rutas: {tiempo_fin - tiempo_inicio:.2f} segundos")
 
 # Visualizacion
 plt.figure(figsize=(8, 6))
